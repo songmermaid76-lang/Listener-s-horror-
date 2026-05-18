@@ -19,7 +19,6 @@ body{
   overflow:hidden;
   height:100vh;
   padding:20px;
-  transition:all 0.3s ease;
 }
 
 #chat-container{
@@ -37,7 +36,7 @@ body{
 }
 
 .msg{
-  max-width:80%;
+  max-width:85%;
   line-height:1.5;
   animation:fadeIn 0.5s ease;
 }
@@ -136,7 +135,7 @@ body{
   padding:20px 35px;
   font-size:1.2rem;
   cursor:pointer;
-  transition:all 0.3s ease;
+  transition:0.3s;
   box-shadow:0 0 15px rgba(255,0,0,0.4);
 }
 
@@ -178,7 +177,7 @@ body{
 }
 
 .strobe{
-  animation:strobe 0.06s infinite;
+  animation:strobe 0.05s infinite;
 }
 
 @keyframes strobe{
@@ -206,7 +205,7 @@ body{
   color:#ff4444;
   font-size:1.3rem;
   opacity:0;
-  transition:opacity 1s ease;
+  transition:1s;
 }
 
 #end-text{
@@ -215,9 +214,18 @@ body{
   text-align:center;
   width:100%;
   color:white;
-  font-size:3rem;
+  font-size:2.5rem;
   display:none;
   text-shadow:0 0 20px red;
+}
+
+#final-terminal{
+  position:absolute;
+  bottom:5%;
+  color:#00ff66;
+  font-size:1rem;
+  opacity:0;
+  transition:2s;
 }
 
 body::before{
@@ -239,6 +247,7 @@ body::before{
 <body>
 
 <div id="chat-container">
+
   <div id="chat-box">
     <div class="msg bot">
       <b>ChatBot:</b> POV - you're the one I'm listening to. What is his origin date?
@@ -249,6 +258,7 @@ body::before{
     <span style="margin-right:10px;color:#9b59ff">&gt;</span>
     <input type="text" id="userInput" placeholder="type your answer..." autocomplete="off">
   </div>
+
 </div>
 
 <div id="redLine">
@@ -283,7 +293,14 @@ body::before{
 </pre>
 
 <div id="corrupt-text">SYSTEM FILES CORRUPTED...</div>
-<div id="end-text">he is still listening.</div>
+
+<div id="end-text">
+you closed the page... but he didn't leave.
+</div>
+
+<div id="final-terminal">
+> SIGNAL STILL ACTIVE...
+</div>
 
 </div>
 
@@ -298,32 +315,15 @@ const wishBtn = document.getElementById('wish-btn');
 const glitchOverlay = document.getElementById('glitch-overlay');
 const corruptText = document.getElementById('corrupt-text');
 const endText = document.getElementById('end-text');
+const finalTerminal = document.getElementById('final-terminal');
 
 let stage = 1;
 let attempts = 0;
 let realWeather = "dark and quiet";
 
-// MOBILE INPUT FIX
 document.addEventListener('click', () => {
   input.focus();
 });
-
-if(navigator.geolocation){
-  navigator.geolocation.getCurrentPosition((position)=>{
-    const lat = position.coords.latitude;
-    const lon = position.coords.longitude;
-
-    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`)
-    .then(res=>res.json())
-    .then(data=>{
-      const temp = Math.round(data.current_weather.temperature);
-      realWeather = `${temp}°C outside.`;
-    })
-    .catch(()=>{
-      realWeather = "cold and silent.";
-    });
-  });
-}
 
 function addMessage(sender,text,isBot){
   const div = document.createElement('div');
@@ -367,9 +367,8 @@ input.addEventListener('keypress',(e)=>{
             addMessage('ChatBot','Wrong code,Try again.',true);
           }
         }
-      }
 
-      else if(stage === 2){
+      }else if(stage === 2){
 
         if(val.toUpperCase() === 'THE LISTENER' || val.toUpperCase() === 'LISTENER'){
 
@@ -446,39 +445,44 @@ function triggerScare(){
 
     const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
 
+    // DEEP HUM
     const osc1 = audioCtx.createOscillator();
-    const osc2 = audioCtx.createOscillator();
-
     const gain1 = audioCtx.createGain();
-    const gain2 = audioCtx.createGain();
 
     osc1.type = 'sawtooth';
-    osc2.type = 'square';
-
     osc1.frequency.value = 55;
-    osc2.frequency.value = 950;
 
     osc1.connect(gain1);
     gain1.connect(audioCtx.destination);
 
+    gain1.gain.value = 0.15;
+
+    osc1.start();
+
+    // GLITCH SOUND
+    const osc2 = audioCtx.createOscillator();
+    const gain2 = audioCtx.createGain();
+
+    osc2.type = 'square';
+    osc2.frequency.value = 950;
+
     osc2.connect(gain2);
     gain2.connect(audioCtx.destination);
 
-    gain1.gain.value = 0.2;
-    gain2.gain.value = 0.15;
+    gain2.gain.value = 0.1;
 
-    osc1.start();
     osc2.start();
 
     const soundLoop = setInterval(()=>{
-      osc2.frequency.value = osc2.frequency.value === 950 ? 300 : 950;
+      osc2.frequency.value =
+      osc2.frequency.value === 950 ? 300 : 950;
     },100);
 
     setTimeout(()=>{
       clearInterval(soundLoop);
       osc1.stop();
       osc2.stop();
-    },3500);
+    },5000);
 
   }catch(err){}
 
@@ -487,14 +491,33 @@ function triggerScare(){
   },1000);
 
   setTimeout(()=>{
-
     glitchOverlay.classList.remove('strobe');
+  },3000);
 
-    document.body.classList.remove('screen-shake');
-
+  setTimeout(()=>{
     endText.style.display = 'block';
+  },4000);
 
-  },3500);
+  setTimeout(()=>{
+    finalTerminal.style.opacity = '1';
+  },6000);
+
+  // RANDOM CREEPY TEXT LOOP
+  setInterval(()=>{
+
+    const creepyTexts = [
+      '> HE IS STILL ACTIVE...',
+      '> SIGNAL FOUND AGAIN...',
+      '> SOMETHING IS WATCHING...',
+      '> CONNECTION NEVER ENDED...',
+      '> DO NOT LOOK BEHIND YOU...',
+      '> THE LISTENER IS STILL HERE...'
+    ];
+
+    finalTerminal.innerHTML =
+      creepyTexts[Math.floor(Math.random()*creepyTexts.length)];
+
+  },4000);
 }
 </script>
 
