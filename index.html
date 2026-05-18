@@ -303,6 +303,11 @@ let stage = 1;
 let attempts = 0;
 let realWeather = "dark and quiet";
 
+// MOBILE INPUT FIX
+document.addEventListener('click', () => {
+  input.focus();
+});
+
 if(navigator.geolocation){
   navigator.geolocation.getCurrentPosition((position)=>{
     const lat = position.coords.latitude;
@@ -326,9 +331,7 @@ function addMessage(sender,text,isBot){
   div.innerHTML = `<b>${sender}:</b> ${text}`;
   chatBox.appendChild(div);
   chatBox.scrollTop = chatBox.scrollHeight;
- document.addEventListener('click', () => {
-  input.focus();
-});
+}
 
 input.addEventListener('keypress',(e)=>{
 
