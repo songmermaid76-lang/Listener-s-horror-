@@ -1,4 +1,436 @@
+# Improved Horror Website Code
+
+Copy and paste this entire code into your `index.html` file.
+
+```html
 <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Listener Archive</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:black;
+  color:#00ff66;
+  font-family:'Courier New', monospace;
+  overflow:hidden;
+  height:100vh;
+  padding:20px;
+  transition:all 0.3s ease;
+}
+
+#chat-container{
+  display:flex;
+  flex-direction:column;
+  height:100%;
+}
+
+#chat-box{
+  flex:1;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.msg{
+  max-width:80%;
+  line-height:1.5;
+  animation:fadeIn 0.5s ease;
+}
+
+.bot{
+  color:white;
+  text-shadow:0 0 8px rgba(255,255,255,0.4);
+}
+
+.user{
+  color:#9b59ff;
+  align-self:flex-end;
+  text-align:right;
+}
+
+#input-area{
+  border-top:1px solid #222;
+  padding-top:15px;
+  display:flex;
+  align-items:center;
+}
+
+#userInput{
+  background:transparent;
+  border:none;
+  outline:none;
+  color:#9b59ff;
+  width:100%;
+  font-size:16px;
+  font-family:inherit;
+}
+
+#userInput::placeholder{
+  color:#555;
+}
+
+@keyframes fadeIn{
+  from{
+    opacity:0;
+    transform:translateY(10px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+#redLine{
+  position:fixed;
+  top:50%;
+  left:0;
+  width:100%;
+  height:4px;
+  background:red;
+  display:none;
+  box-shadow:0 0 20px red;
+  z-index:20;
+}
+
+#line-text{
+  position:absolute;
+  width:100%;
+  text-align:center;
+  top:-50px;
+  color:white;
+  font-size:2rem;
+  letter-spacing:6px;
+  text-shadow:0 0 15px red;
+}
+
+#countdown{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+  font-size:8rem;
+  color:red;
+  display:none;
+  z-index:30;
+  text-shadow:0 0 25px red;
+}
+
+#wish-button-container{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+  display:none;
+  z-index:40;
+}
+
+#wish-btn{
+  background:black;
+  color:red;
+  border:2px solid red;
+  padding:20px 35px;
+  font-size:1.2rem;
+  cursor:pointer;
+  transition:all 0.3s ease;
+  box-shadow:0 0 15px rgba(255,0,0,0.4);
+}
+
+#wish-btn:hover{
+  background:red;
+  color:black;
+  box-shadow:0 0 35px red;
+}
+
+#camera-flash{
+  position:fixed;
+  inset:0;
+  background:white;
+  display:none;
+  z-index:50;
+}
+
+.screen-shake{
+  animation:shake 0.08s infinite;
+}
+
+@keyframes shake{
+  0%{transform:translate(3px,3px)}
+  25%{transform:translate(-3px,-3px)}
+  50%{transform:translate(4px,-2px)}
+  75%{transform:translate(-4px,2px)}
+  100%{transform:translate(3px,-3px)}
+}
+
+#glitch-overlay{
+  position:fixed;
+  inset:0;
+  background:black;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  z-index:100;
+}
+
+.strobe{
+  animation:strobe 0.06s infinite;
+}
+
+@keyframes strobe{
+  0%,100%{background:black}
+  50%{background:#330000}
+}
+
+#monster{
+  color:red;
+  white-space:pre;
+  font-size:10px;
+  line-height:8px;
+  text-shadow:0 0 15px red;
+  animation:glitch 0.05s infinite;
+}
+
+@keyframes glitch{
+  0%{transform:skewX(0deg)}
+  50%{transform:skewX(10deg) scale(1.1)}
+  100%{transform:skewX(-10deg)}
+}
+
+#corrupt-text{
+  margin-top:30px;
+  color:#ff4444;
+  font-size:1.3rem;
+  opacity:0;
+  transition:opacity 1s ease;
+}
+
+#end-text{
+  position:absolute;
+  bottom:10%;
+  text-align:center;
+  width:100%;
+  color:white;
+  font-size:3rem;
+  display:none;
+  text-shadow:0 0 20px red;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.03),
+    rgba(255,255,255,0.03) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events:none;
+}
+</style>
+</head>
+
+<body>
+
+<div id="chat-container">
+  <div id="chat-box">
+    <div class="msg bot">
+      <b>ChatBot:</b> POV - you're the one I'm listening to. What is his origin date?
+    </div>
+  </div>
+
+  <div id="input-area">
+    <span style="margin-right:10px;color:#9b59ff">&gt;</span>
+    <input type="text" id="userInput" placeholder="type your answer..." autocomplete="off">
+  </div>
+</div>
+
+<div id="redLine">
+  <div id="line-text">MAKE A WISH</div>
+</div>
+
+<div id="countdown">3</div>
+<div id="camera-flash"></div>
+
+<div id="wish-button-container">
+  <button id="wish-btn">CLICK TO KNOW YOUR WISH</button>
+</div>
+
+<div id="glitch-overlay">
+
+<pre id="monster">
+      XXXXX        XXXXX
+     XXXXXXX      XXXXXXX
+    XXXXXXXXX    XXXXXXXXX
+    XXXX  XXX    XXX  XXXX
+    XXXX  XXX    XXX  XXXX
+    XXXXXXXXX    XXXXXXXXX
+     XXXXXXX      XXXXXXX
+      XXXX        XXXX
+
+          XXXXXXXXXX
+        XXXXXXXXXXXXXX
+       XXXX   XX   XXXX
+       XXXX        XXXX
+        XXXXXXXXXXXXXX
+          XXXXXXXXXX
+</pre>
+
+<div id="corrupt-text">SYSTEM FILES CORRUPTED...</div>
+<div id="end-text">he is still listening.</div>
+
+</div>
+
+<script>
+const input = document.getElementById('userInput');
+const chatBox = document.getElementById('chat-box');
+const redLine = document.getElementById('redLine');
+const countdown = document.getElementById('countdown');
+const flash = document.getElementById('camera-flash');
+const wishContainer = document.getElementById('wish-button-container');
+const wishBtn = document.getElementById('wish-btn');
+const glitchOverlay = document.getElementById('glitch-overlay');
+const corruptText = document.getElementById('corrupt-text');
+const endText = document.getElementById('end-text');
+
+let stage = 1;
+let attempts = 0;
+let realWeather = "dark and quiet";
+
+if(navigator.geolocation){
+  navigator.geolocation.getCurrentPosition((position)=>{
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`)
+    .then(res=>res.json())
+    .then(data=>{
+      const temp = Math.round(data.current_weather.temperature);
+      realWeather = `${temp}°C outside.`;
+    })
+    .catch(()=>{
+      realWeather = "cold and silent.";
+    });
+  });
+}
+
+function addMessage(sender,text,isBot){
+  const div = document.createElement('div');
+  div.className = `msg ${isBot ? 'bot' : 'user'}`;
+  div.innerHTML = `<b>${sender}:</b> ${text}`;
+  chatBox.appendChild(div);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+input.addEventListener('keypress',(e)=>{
+
+  if(e.key === 'Enter' && input.value.trim() !== ''){
+
+    const val = input.value.trim();
+
+    addMessage('You',val,false);
+
+    input.value = '';
+
+    setTimeout(()=>{
+
+      if(stage === 1){
+
+        if(val === '12/06/2011' || val === '12/6/2011'){
+
+          addMessage(
+            'ChatBot',
+            `A Sunday. It was raining then... and right now it is ${realWeather} But do you know his name?`,
+            true
+          );
+
+          stage = 2;
+
+        }else{
+
+          attempts++;
+
+          if(attempts >= 2){
+            addMessage('ChatBot','You really forgot? Try again.',true);
+          }else{
+            addMessage('ChatBot','Wrong code.',true);
+          }
+        }
+      }
+
+      else if(stage === 2){
+
+        if(val.toUpperCase() === 'THE LISTENER' || val.toUpperCase() === 'LISTENER'){
+
+          document.getElementById('chat-container').style.display = 'none';
+
+          redLine.style.display = 'block';
+
+          setTimeout(()=>{
+            redLine.style.display = 'none';
+            startCountdown();
+          },2000);
+
+        }else{
+          addMessage('ChatBot','No. Type THE LISTENER.',true);
+        }
+      }
+
+    },800);
+  }
+});
+
+function startCountdown(){
+
+  countdown.style.display = 'block';
+
+  let count = 3;
+
+  const timer = setInterval(()=>{
+
+    count--;
+
+    if(count > 0){
+
+      countdown.innerText = count;
+
+      if(count === 1){
+
+        document.body.classList.add('screen-shake');
+
+        flash.style.display = 'block';
+
+        setTimeout(()=>{
+          flash.style.display = 'none';
+        },120);
+      }
+
+    }else{
+
+      clearInterval(timer);
+
+      countdown.style.display = 'none';
+
+      document.body.classList.remove('screen-shake');
+
+      wishContainer.style.display = 'block';
+    }
+
+  },1000);
+}
+
+wishBtn.addEventListener('click', triggerScare);
 
 function triggerScare(){
 
@@ -68,3 +500,13 @@ function triggerScare(){
 
 </body>
 </html>
+```
+
+Extra ideas later:
+
+* add fake files
+* hidden passwords
+* secret endings
+* background static sound
+* fake camera access screen
+* multiple chapters
