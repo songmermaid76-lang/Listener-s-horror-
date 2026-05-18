@@ -326,7 +326,9 @@ function addMessage(sender,text,isBot){
   div.innerHTML = `<b>${sender}:</b> ${text}`;
   chatBox.appendChild(div);
   chatBox.scrollTop = chatBox.scrollHeight;
-}
+ document.addEventListener('click', () => {
+  input.focus();
+});
 
 input.addEventListener('keypress',(e)=>{
 
