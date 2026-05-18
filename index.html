@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="google-site-verification" content="U5hC6dp0dusq5I0Tpi44OMqKo5D86OwsH5cY6et4qu0" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>TheListener2011TerminalArchive</title>
 <style>
   /* Core layout for pitch-black terminal vibe */
@@ -19,6 +19,7 @@
     box-sizing: border-box;
     padding: 20px;
     overflow: hidden;
+    cursor: pointer; /* Shows the screen is clickable */
   }
   #chat-container {
     display: flex;
@@ -37,10 +38,10 @@
   .msg { margin: 10px 0; max-width: 80%; line-height: 1.4; }
   .bot { color: #ffffff; text-shadow: 0 0 5px rgba(255,255,255,0.5); }
   .user { color: #8a2be2; align-self: flex-end; text-align: right; }
-  
-  #input-area { display: flex; border-top: 1px solid #333; padding-top: 10px; }
-  #userInput { background: transparent; border: none; color: #8a2be2; font-family: inherit; font-size: 1.1rem; outline: none; flex-grow: 1; }
-  
+   
+  #input-area { display: flex; border-top: 1px solid #333; padding-top: 10px; align-items: center; }
+  #userInput { background: transparent; border: none; color: #8a2be2; font-family: inherit; font-size: 16px; outline: none; flex-grow: 1; }
+   
   /* Red line sequence elements */
   #redLine { 
     position: fixed; top: 50%; left: 0; width: 100%; height: 4px; background: red; 
@@ -66,7 +67,7 @@
     box-shadow: 0 0 15px rgba(255,0,0,0.4); transition: 0.3s;
   }
   #wish-btn:hover { background: red; color: black; box-shadow: 0 0 30px red; }
-  
+   
   /* Blinding flash screen */
   #camera-flash {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -117,7 +118,7 @@
     50% { transform: scale(1.2) skewX(15deg); color: #ff3333; }
     100% { transform: scale(0.9) skewX(-15deg); color: #000; }
   }
-  
+   
   #end-text {
     position: absolute; bottom: 10%; left: 0; width: 100%;
     color: white; font-size: 4rem; font-weight: bold; font-family: inherit;
@@ -134,7 +135,7 @@
   </div>
   <div id="input-area">
     <span style="color: #8a2be2; margin-right: 10px;">&gt;</span>
-    <input type="text" id="userInput" placeholder="Type your reply..." autocomplete="off" autofocus>
+    <input type="text" id="userInput" placeholder="Tap screen to type reply..." autocomplete="off" autofocus>
   </div>
 </div>
 
@@ -148,21 +149,21 @@
 
 <div id="glitch-scare-overlay">
   <pre id="monster-graphic">
-     XXXXX        XXXXX
-    XXXXXXX      XXXXXXX
-   XXXXXXXXX    XXXXXXXXX
-   XXXX  XXX    XXX  XXXX
-   XXXX  XXX    XXX  XXXX
-   XXXXXXXXX    XXXXXXXXX
-    XXXXXXX      XXXXXXX
-     XXXX          XXXX
-     
-         XXXXXXXXXX
-       XXXXXXXXXXXXXX
-      XXXX   XX   XXXX
+      XXXXX        XXXXX
+     XXXXXXX      XXXXXXX
+    XXXXXXXXX    XXXXXXXXX
+    XXXX  XXX    XXX  XXXX
+    XXXX  XXX    XXX  XXXX
+    XXXXXXXXX    XXXXXXXXX
+     XXXXXXX      XXXXXXX
       XXXX        XXXX
-       XXXXXXXXXXXXXX
-         XXXXXXXXXX
+      
+          XXXXXXXXXX
+        XXXXXXXXXXXXXX
+       XXXX   XX   XXXX
+       XXXX        XXXX
+        XXXXXXXXXXXXXX
+          XXXXXXXXXX
   </pre>
   <div id="end-text">I GOT U......HAAA</div>
 </div>
@@ -183,6 +184,13 @@ let stage = 1;
 let attempts = 0;
 let realWeather = "dark and quiet"; 
 
+// AUTOMATIC MOBILE KEYBOARD FOCUS EVENT
+document.addEventListener('click', function() {
+  if (chatContainer.style.display !== "none") {
+    input.focus();
+  }
+});
+
 if (navigator.geolocation) {
   navigator.geolocation.getCurrentPosition((position) => {
     const lat = position.coords.latitude;
@@ -197,7 +205,7 @@ if (navigator.geolocation) {
         if (code >= 51 && code <= 67) condition = "drizzling";
         if (code >= 71 && code <= 82) condition = "snowing";
         if (code >= 95) condition = "storming";
-        
+         
         realWeather = `${temp}°C and ${condition}`;
       }).catch(() => {
         realWeather = "cold and silent";
@@ -235,10 +243,10 @@ input.addEventListener("keypress", (e) => {
       } 
       else if (stage === 2) {
         if (val.toUpperCase() === "THE LISTENER" || val.toUpperCase() === "LISTENER") {
-          
+           
           chatContainer.style.display = "none";
           redLine.style.display = "block";
-          
+           
           setTimeout(() => {
             redLine.style.display = "none";
             startScaryTimer();
@@ -255,12 +263,12 @@ input.addEventListener("keypress", (e) => {
 function startScaryTimer() {
   countdown.style.display = "block";
   let count = 3;
-  
+   
   let timerInterval = setInterval(() => {
     count--;
     if (count > 0) {
       countdown.innerText = count;
-      
+       
       if (count === 1) {
         document.body.classList.add('screen-shake');
         flash.style.display = 'block';
@@ -280,19 +288,19 @@ function triggerGlitchScare() {
   glitchOverlay.style.display = "flex";
   glitchOverlay.classList.add('strobe-effect');
   document.body.classList.add('screen-shake');
-  
+   
   try {
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const osc1 = audioCtx.createOscillator();
     const gain1 = audioCtx.createGain();
     osc1.type = 'sawtooth';
     osc1.frequency.setValueAtTime(55, audioCtx.currentTime);
-    
+     
     const osc2 = audioCtx.createOscillator();
     const gain2 = audioCtx.createGain();
     osc2.type = 'square';
     osc2.frequency.setValueAtTime(950, audioCtx.currentTime);
-    
+     
     setInterval(() => {
       osc2.frequency.setValueAtTime(osc2.frequency.value === 950 ? 300 : 950, audioCtx.currentTime);
     }, 100);
@@ -301,7 +309,7 @@ function triggerGlitchScare() {
     osc2.connect(gain2); gain2.connect(audioCtx.destination);
     gain1.gain.setValueAtTime(0.4, audioCtx.currentTime);
     gain2.gain.setValueAtTime(0.3, audioCtx.currentTime);
-    
+     
     osc1.start(); osc2.start();
   } catch(e) {}
 
@@ -312,7 +320,7 @@ function triggerGlitchScare() {
     glitchOverlay.classList.remove('strobe-effect');
     document.body.classList.remove('screen-shake');
     monsterGraphic.style.display = "none";
-    
+     
     glitchOverlay.style.backgroundColor = "black";
     endText.style.color = "white";
     endText.style.display = "block";
